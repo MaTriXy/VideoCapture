@@ -2,15 +2,15 @@ import UIKit
 import AVFoundation
 import CoreVideo
 
-public protocol MTLVideoCaptureDelegate: class {
-    func videoCapture(_ capture: MTLVideoCapture,
+public protocol VideoCaptureDelegate: class {
+    func videoCapture(_ capture: VideoCapture,
                       didCapturePixelBuffer pixelBuffer: CVPixelBuffer,
                       timestamp: CMTime)
 }
 
-final public class MTLVideoCapture: NSObject {
+final public class VideoCapture: NSObject {
 
-    public typealias MTLVideoCaptureSetupCompletion = (Result<(), Swift.Error>) -> Void
+    public typealias VideoCaptureSetupCompletion = (Result<(), Swift.Error>) -> Void
 
     public enum Error: Swift.Error, LocalizedError {
         case noVideoDevicesAvailable
@@ -31,7 +31,7 @@ final public class MTLVideoCapture: NSObject {
         case back
     }
 
-    public weak var delegate: MTLVideoCaptureDelegate?
+    public weak var delegate: VideoCaptureDelegate?
     private var captureSession = AVCaptureSession()
     private let videoOutput = AVCaptureVideoDataOutput()
     private let queue = DispatchQueue(label: "com.eugenebokhan.video",
@@ -40,7 +40,7 @@ final public class MTLVideoCapture: NSObject {
     public func setup(sessionPreset: AVCaptureSession.Preset = .high,
                       desiredFrameRate: Int = 30,
                       position: CameraPosition = .front,
-                      completion: @escaping MTLVideoCaptureSetupCompletion) {
+                      completion: @escaping VideoCaptureSetupCompletion) {
         self.queue.async {
             do {
                 try self.setupCamera(sessionPreset: sessionPreset,
@@ -150,7 +150,7 @@ final public class MTLVideoCapture: NSObject {
 
 }
 
-extension MTLVideoCapture: AVCaptureVideoDataOutputSampleBufferDelegate {
+extension VideoCapture: AVCaptureVideoDataOutputSampleBufferDelegate {
     public func captureOutput(_ output: AVCaptureOutput,
                               didOutput sampleBuffer: CMSampleBuffer,
                               from connection: AVCaptureConnection) {
